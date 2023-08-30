@@ -8,32 +8,38 @@
 import UIKit
 
 final class FavouriteViewController: UIViewController {
-    @IBOutlet weak var favouriteTableView: UITableView!
+    @IBOutlet private weak var favouriteTableView: UITableView!
+    @IBOutlet private weak var backButton: UIButton!
+    
     private var reusableTableView: ReusebleTableView!
 
     private var favourites = [User]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        initFavouriteList()
         customizeView()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.setNavigationBarHidden(true, animated: animated)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.setNavigationBarHidden(false, animated: animated)
     }
     
     private func customizeView() {
         favouriteTableView.hideVerticalIndicator()
     }
-    
-    // TODO: Update when fetch data
-    private func initFavouriteList(){
-        let users = [User(image: "defaultAva", name: "Username", link: "github.com"),
-                     User(image: "defaultAva", name: "Username", link: "github.com"),]
-        
-        _ = users.map { favourites.append($0) }
+
+    @IBAction private func backButtonTapped(_ sender: UIButton) {
+        self.navigationController?.popViewController(animated: true)
     }
 }
 
 extension FavouriteViewController: UITableViewDelegate, UITableViewDataSource {
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return favourites.count
     }

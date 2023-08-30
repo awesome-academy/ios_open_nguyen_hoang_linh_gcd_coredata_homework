@@ -14,7 +14,7 @@ extension UIButton {
         layer.shadowOffset = CGSize.zero
         layer.shadowRadius = 5
     }
-    
+
     func borderButtonRadius(radius: CGFloat) {
         layer.cornerRadius = radius
     }

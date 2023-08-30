@@ -11,4 +11,6 @@ struct User {
     var image: String
     var name: String
     var link: String
+    var profileLink: String
+    var followersLink: String
 }
