@@ -7,14 +7,20 @@
 
 import UIKit
 
+protocol UserTableViewCellDelegate: AnyObject{
+    func userButtonTapped(sender: UIButton)
+}
+
 final class UserTableViewCell : UITableViewCell, ReusebleTableView{
     
-    @IBOutlet weak var userButton: UIButton!
+    @IBOutlet private weak var userButton: UIButton!
     @IBOutlet private weak var userImage: UIImageView!
     @IBOutlet private weak var userName: UILabel!
     @IBOutlet private weak var userLink: UILabel!
     
     static var reuseIdentifier = "userTableViewCellId"
+    
+    weak var delegate: UserTableViewCellDelegate?
     
     override func layoutSubviews() {
         customizeView()
@@ -28,9 +34,17 @@ final class UserTableViewCell : UITableViewCell, ReusebleTableView{
     }
     
     func config(thisUser: User) {
-        userImage.image = UIImage(named: thisUser.image)
+        setImage(image: thisUser.image)
         userName.text = thisUser.name
         userLink.text = thisUser.link
+    }
+    
+    private func setImage(image: String) {
+        APIRepository.shared.getImageData(stringURL: image) { (data: Data) in
+            DispatchQueue.main.async { [weak self] in
+                self?.userImage.image = UIImage(data: data)
+            }
+        }
     }
     
     private func setClickableLink() {
@@ -45,5 +59,9 @@ final class UserTableViewCell : UITableViewCell, ReusebleTableView{
         if let url = URL(string: userLink.text ?? "") {
             UIApplication.shared.open(url, options: [:])
         }
+    }
+    
+    @IBAction private func userButtonTapped(_ sender: UIButton) {
+        delegate?.userButtonTapped(sender: sender)
     }
 }
