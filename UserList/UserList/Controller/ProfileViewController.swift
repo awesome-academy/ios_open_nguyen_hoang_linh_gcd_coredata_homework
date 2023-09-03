@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 final class ProfileViewController: UIViewController{
     @IBOutlet private weak var userImageView: UIImageView!
@@ -18,12 +19,14 @@ final class ProfileViewController: UIViewController{
     @IBOutlet private weak var repoLabel: UILabel!
     @IBOutlet private weak var loveButton: UIButton!
     @IBOutlet private weak var profileTableView: UITableView!
+    @IBOutlet private weak var alertTextField: UITextField!
     @IBOutlet private weak var segmentedControl: UISegmentedControl!
     
     private var reusableTableView: ReusebleTableView!
     private var followers = [User]()
     var profileURL: String?
     var followerURL: String?
+    private var favouritesDictionary: [String: String] = [:]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -66,8 +69,16 @@ final class ProfileViewController: UIViewController{
         }
     }
     
+    private func passDataToFavourite(image: String,
+                                     name: String,
+                                     link: String) {
+        favouritesDictionary["image"] = image
+        favouritesDictionary["name"] = name
+        favouritesDictionary["link"] = link
+    }
+    
     private func getImage(image: String) {
-        let queue = DispatchQueue(label: "myQueue", qos: .utility)
+        let queue = DispatchQueue(label: "getImageQueue", qos: .utility)
         queue.async { [unowned self] in
             APIRepository.shared.getImageData(stringURL: image) { (data: Data) in
                 self.userImageView.image = UIImage(data: data)
@@ -76,9 +87,10 @@ final class ProfileViewController: UIViewController{
     }
     
     private func getProfileDetail(profileURL: String) {
-        let queue = DispatchQueue(label: "myQueue", qos: .utility)
+        let queue = DispatchQueue(label: "getProfileDetailQueue", qos: .utility)
         queue.async { [unowned self] in
             APIRepository.shared.fetchProfileApi(profileURL: profileURL) { (item: Item) in
+                self.passDataToFavourite(image: item.avatar_url, name: item.login, link: item.html_url)
                 self.passDataToView(image: item.avatar_url,
                                     name: item.login,
                                     bio: item.bio,
@@ -91,7 +103,7 @@ final class ProfileViewController: UIViewController{
     }
     
     private func getFollowers(followerURL: String) {
-        let queue = DispatchQueue(label: "myQueue", qos: .utility)
+        let queue = DispatchQueue(label: "getFollowersQueue", qos: .utility)
         queue.async { [unowned self] in
             APIRepository.shared.fetchFollowersApi(followerURL: followerURL) { (itemList: [Item]) in
                 _ = itemList.map { item in
@@ -106,9 +118,40 @@ final class ProfileViewController: UIViewController{
         }
     }
     
+    private func showAlertView(message: String) {
+        let alertTime = DispatchTime.now() + 2
+        alertTextField.text = message
+        alertTextField.isHidden = false
+        DispatchQueue.main.asyncAfter(deadline: alertTime) { [weak self] in
+            self?.alertTextField.isHidden = true
+        }
+    }
+    
+    private func buttonAnimation(_ sender: UIButton) {
+        let colorAnimation = CABasicAnimation(keyPath: "backgroundColor")
+        colorAnimation.fromValue = UIColor.systemRed.cgColor
+        colorAnimation.duration = 1
+        sender.layer.add(colorAnimation, forKey: "ColorPulse")
+    }
     
     @IBAction private func backButtonTapped(_ sender: UIButton) {
         self.navigationController?.popViewController(animated: true)
+    }
+    
+    @IBAction private func loveButtonTapped(_ sender: UIButton) {
+        var isExist = false
+        _ = favourites.map({ favourite in
+            if favourite.name == favouritesDictionary["name"] {
+                buttonAnimation(sender)
+                showAlertView(message: "User already in Favourites")
+                isExist = true
+            }
+        })
+        if !isExist {
+            CoreDataManager.shared.saveItem(favouriteUserInfo: favouritesDictionary)
+            buttonAnimation(sender)
+            showAlertView(message: "Added to Favourites")
+        }
     }
     
     private func customizeView() {
@@ -119,19 +162,22 @@ final class ProfileViewController: UIViewController{
         self.view.bringSubviewToFront(loveButton)
         loveButton.borderButtonRadius(radius: loveButton.bounds.height / 2)
         profileTableView.hideVerticalIndicator()
+        alertTextField.setHorizontalPaddingPoints(10)
         segmentedControl.defaultConfiguration()
         segmentedControl.selectedConfiguration()
     }
 }
 
-extension ProfileViewController: UITableViewDelegate, UITableViewDataSource {
+extension ProfileViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return followers.count
     }
-    
+}
+
+extension ProfileViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = profileTableView.dequeueReusableCell(UserTableViewCell.self)
-        cell.config(thisUser: followers[indexPath.row])
+        cell.configUser(thisUser: followers[indexPath.row])
         return cell
     }
 }

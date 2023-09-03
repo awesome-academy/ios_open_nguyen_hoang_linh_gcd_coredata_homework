@@ -33,8 +33,16 @@ final class UserTableViewCell : UITableViewCell, ReusebleTableView{
         setClickableLink()
     }
     
-    func config(thisUser: User) {
+    func configUser(thisUser: User) {
         setImage(image: thisUser.image)
+        userName.text = thisUser.name
+        userLink.text = thisUser.link
+    }
+    
+    func configFavourite(thisUser: Favourite) {
+        if let image = thisUser.image {
+            setImage(image: image)
+        }
         userName.text = thisUser.name
         userLink.text = thisUser.link
     }

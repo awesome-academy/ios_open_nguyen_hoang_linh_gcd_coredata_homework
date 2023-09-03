@@ -109,7 +109,7 @@
                                                 <constraint firstItem="XSt-vT-HPT" firstAttribute="leading" secondItem="bmi-G9-Jcy" secondAttribute="trailing" constant="10" id="Jix-3D-PFz"/>
                                                 <constraint firstItem="4P8-PI-vUY" firstAttribute="leading" secondItem="bmi-G9-Jcy" secondAttribute="trailing" constant="10" id="JrU-Mw-5nz"/>
                                                 <constraint firstItem="bmi-G9-Jcy" firstAttribute="leading" secondItem="5MK-nZ-92O" secondAttribute="leadingMargin" constant="5" id="MWN-kQ-Dlo"/>
-                                                <constraint firstItem="gPD-0S-ggq" firstAttribute="leading" relation="lessThanOrEqual" secondItem="XSt-vT-HPT" secondAttribute="trailing" constant="170" id="XRd-Gj-eFX"/>
+                                                <constraint firstItem="gPD-0S-ggq" firstAttribute="trailing" secondItem="5MK-nZ-92O" secondAttribute="trailingMargin" id="Maf-NN-rne"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="gPD-0S-ggq" secondAttribute="trailing" id="bep-6D-e7f"/>
                                                 <constraint firstItem="6vK-Vv-Rhv" firstAttribute="leading" secondItem="5MK-nZ-92O" secondAttribute="leadingMargin" id="fO0-La-gU2"/>
                                                 <constraint firstItem="bmi-G9-Jcy" firstAttribute="top" secondItem="5MK-nZ-92O" secondAttribute="topMargin" constant="3" id="iWF-hS-3l2"/>
@@ -174,6 +174,9 @@
                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="plain" image="heart" catalog="system"/>
+                                <connections>
+                                    <action selector="loveButtonTapped:" destination="KmY-fh-7YP" eventType="touchUpInside" id="Sw8-yV-AGN"/>
+                                </connections>
                             </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FLK-DH-bNV">
                                 <rect key="frame" x="0.0" y="0.0" width="393" height="450"/>
@@ -384,6 +387,13 @@
                                     <outlet property="delegate" destination="KmY-fh-7YP" id="Yz7-Nz-0T1"/>
                                 </connections>
                             </tableView>
+                            <textField hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="9sO-xh-utN">
+                                <rect key="frame" x="180" y="698" width="33" height="34"/>
+                                <color key="backgroundColor" red="0.28235294117647058" green="0.34509803921568627" blue="0.32549019607843138" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="fEU-QI-ewr"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -393,14 +403,17 @@
                             <constraint firstItem="Hrt-fd-YXN" firstAttribute="top" secondItem="FLK-DH-bNV" secondAttribute="bottom" constant="10" id="Aip-44-CJU"/>
                             <constraint firstItem="fEU-QI-ewr" firstAttribute="bottom" secondItem="Hrt-fd-YXN" secondAttribute="bottom" id="CuE-RD-Upr"/>
                             <constraint firstItem="fEU-QI-ewr" firstAttribute="trailing" secondItem="FLK-DH-bNV" secondAttribute="trailing" id="TwQ-OQ-RBi"/>
+                            <constraint firstAttribute="bottom" secondItem="9sO-xh-utN" secondAttribute="bottom" constant="120" id="VZg-Jv-ych"/>
                             <constraint firstItem="FLK-DH-bNV" firstAttribute="top" secondItem="KzQ-CQ-bAD" secondAttribute="top" id="YCj-9L-iZh"/>
                             <constraint firstItem="Hrt-fd-YXN" firstAttribute="leading" secondItem="fEU-QI-ewr" secondAttribute="leading" id="eDb-mc-fxP"/>
+                            <constraint firstItem="9sO-xh-utN" firstAttribute="centerX" secondItem="KzQ-CQ-bAD" secondAttribute="centerX" id="qme-Us-FPv"/>
                             <constraint firstItem="Ffy-Ut-VZl" firstAttribute="leading" relation="lessThanOrEqual" secondItem="fEU-QI-ewr" secondAttribute="leading" constant="320" id="st1-jq-jRA"/>
                             <constraint firstItem="fEU-QI-ewr" firstAttribute="trailing" secondItem="Hrt-fd-YXN" secondAttribute="trailing" id="uty-2U-4It"/>
                             <constraint firstItem="fEU-QI-ewr" firstAttribute="trailing" secondItem="Ffy-Ut-VZl" secondAttribute="trailing" constant="20" id="vzT-mF-R9m"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="alertTextField" destination="9sO-xh-utN" id="FaH-Dw-eEy"/>
                         <outlet property="backButton" destination="IBe-96-PXD" id="Tbx-BG-NtX"/>
                         <outlet property="followersLabel" destination="0mF-Cl-MLv" id="zuJ-Bt-62l"/>
                         <outlet property="followingLabel" destination="PaB-Ai-ByT" id="p1D-fc-oge"/>
@@ -442,16 +455,19 @@
                                                 </connections>
                                             </button>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Favourite Users" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RH0-p8-037">
-                                                <rect key="frame" x="114.66666666666669" y="14.666666666666671" width="147" height="24"/>
+                                                <rect key="frame" x="114" y="14.666666666666671" width="147" height="24"/>
                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Kpx-f2-JTU">
-                                                <rect key="frame" x="325.33333333333331" y="9.3333333333333286" width="47.666666666666686" height="34.333333333333336"/>
+                                                <rect key="frame" x="324" y="9.3333333333333286" width="49" height="34.333333333333336"/>
                                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" image="ellipsis" catalog="system"/>
+                                                <buttonConfiguration key="configuration" style="plain" image="clear.fill" catalog="system"/>
+                                                <connections>
+                                                    <action selector="deleteAllButtonTapped:" destination="wnL-TG-y1p" eventType="touchUpInside" id="RCy-Dm-oft"/>
+                                                </connections>
                                             </button>
                                         </subviews>
                                     </stackView>
@@ -521,13 +537,13 @@
                                                 <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="8yS-8b-p0c" secondAttribute="trailing" constant="50" id="Kvy-ZF-5u8"/>
                                                 <constraint firstItem="8yS-8b-p0c" firstAttribute="leading" secondItem="CEb-Tr-VLe" secondAttribute="trailing" constant="10" id="Lwd-6H-31t"/>
                                                 <constraint firstItem="Bo7-X6-5DO" firstAttribute="centerY" secondItem="c6f-z3-mnt" secondAttribute="centerY" id="VbK-5F-GW9"/>
+                                                <constraint firstItem="Bo7-X6-5DO" firstAttribute="trailing" secondItem="c6f-z3-mnt" secondAttribute="trailingMargin" id="YCp-wg-zBC"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="2tg-A0-ObU" secondAttribute="trailing" id="etM-Vp-P2E"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="2tg-A0-ObU" secondAttribute="bottom" id="g5J-T0-nII"/>
                                                 <constraint firstItem="bYC-8c-3pf" firstAttribute="leading" secondItem="CEb-Tr-VLe" secondAttribute="trailing" constant="10" id="hcU-xH-C4i"/>
                                                 <constraint firstItem="8yS-8b-p0c" firstAttribute="top" secondItem="c6f-z3-mnt" secondAttribute="topMargin" constant="20" id="hxt-Fg-QPa"/>
                                                 <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="bYC-8c-3pf" secondAttribute="trailing" constant="50" id="iRJ-8e-bfR"/>
                                                 <constraint firstAttribute="bottomMargin" secondItem="CEb-Tr-VLe" secondAttribute="bottom" constant="3" id="mta-XE-hTd"/>
-                                                <constraint firstItem="Bo7-X6-5DO" firstAttribute="leading" relation="lessThanOrEqual" secondItem="8yS-8b-p0c" secondAttribute="trailing" constant="170" id="qUO-oy-Gxq"/>
                                                 <constraint firstAttribute="trailingMargin" secondItem="Bo7-X6-5DO" secondAttribute="trailing" id="rf5-9f-9bc"/>
                                                 <constraint firstItem="2tg-A0-ObU" firstAttribute="top" secondItem="c6f-z3-mnt" secondAttribute="topMargin" id="vi7-U5-UeA"/>
                                             </constraints>
@@ -589,8 +605,8 @@
     <resources>
         <image name="arrowshape.left.fill" catalog="system" width="128" height="104"/>
         <image name="chevron.right" catalog="system" width="97" height="128"/>
+        <image name="clear.fill" catalog="system" width="128" height="114"/>
         <image name="defaultAva" width="512" height="512"/>
-        <image name="ellipsis" catalog="system" width="128" height="37"/>
         <image name="heart" catalog="system" width="128" height="107"/>
         <image name="heart.fill" catalog="system" width="128" height="107"/>
         <systemColor name="systemBackgroundColor">
