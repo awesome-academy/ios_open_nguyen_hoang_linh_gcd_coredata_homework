@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 final class HomeViewController: UIViewController {
     @IBOutlet private weak var searchBar: UISearchBar!
@@ -16,10 +17,15 @@ final class HomeViewController: UIViewController {
     private var users = [User]()
     private var tapIndex: Int?
     private var searchUsers = [User]()
-    private var searching = false
+    private var isSearching = false
+    private var isFirstTimeLoading = true
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        if isFirstTimeLoading {
+            isFirstTimeLoading.toggle()
+            CoreDataManager.shared.getAllItems()
+        }
         customizeView()
         getUsers()
     }
@@ -41,8 +47,8 @@ final class HomeViewController: UIViewController {
     }
     
     private func getUsers() {
-        let queue = DispatchQueue(label: "myQueue", qos: .utility)
-        queue.async {[unowned self] in
+        let queue = DispatchQueue(label: "getUsersQueue", qos: .utility)
+        queue.async { [unowned self] in
             APIRepository.shared.fetchUsersApi() { (itemList: [Item]) in
                 _ = itemList.map { item in
                     self.users.append(User(image: item.avatar_url,
@@ -78,7 +84,7 @@ extension HomeViewController: UserTableViewCellDelegate, UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         searchUsers = users.filter({ $0.name.lowercased().prefix(searchText.count) == searchText.lowercased() })
-        searching = true
+        isSearching = true
         userTableView.reloadData()
     }
     
@@ -87,15 +93,19 @@ extension HomeViewController: UserTableViewCellDelegate, UISearchBarDelegate {
     }
 }
 
-extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
+extension HomeViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if searching { return searchUsers.count } else { return users.count }
+        if isSearching { return searchUsers.count } else { return users.count }
     }
-    
+}
+
+extension HomeViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = userTableView.dequeueReusableCell(UserTableViewCell.self)
         cell.delegate = self
-        searching ? cell.config(thisUser: searchUsers[indexPath.row]) : cell.config(thisUser: users[indexPath.row])
+        isSearching
+        ? cell.configUser(thisUser: searchUsers[indexPath.row])
+        : cell.configUser(thisUser: users[indexPath.row])
         return cell
     }
 }
